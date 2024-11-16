@@ -30,8 +30,8 @@ import 'package:Yes_Loyalty/ui/screens/settings/user/change_password/change_pass
 import 'package:Yes_Loyalty/ui/screens/settings/user/delete_account/delete_account.dart';
 import 'package:Yes_Loyalty/ui/screens/settings/user/user_settings.dart';
 import 'package:Yes_Loyalty/ui/screens/splash/splash_screen.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:Yes_Loyalty/core/db/hive_db/adapters/branch_list_adater/branch_list_adapter.dart';
 import 'package:Yes_Loyalty/core/db/hive_db/adapters/selected_branch_adater/selected_adapter.dart';
@@ -52,13 +52,13 @@ import 'package:Yes_Loyalty/core/view_model/store_details/store_details_bloc.dar
 import 'package:Yes_Loyalty/core/view_model/store_list/store_list_bloc.dart';
 import 'package:Yes_Loyalty/core/view_model/transaction_details/transaction_details_bloc.dart';
 import 'package:Yes_Loyalty/core/view_model/user_details/user_details_bloc.dart';
-// import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
+  await Firebase.initializeApp();
   await SetSharedPreferences.checkAndClearFirstRunData();
 
   // Initialize Hive
@@ -75,86 +75,86 @@ void main() async {
   UserDetailsBox = await Hive.openBox<UserDetailsDB>('UserDetailsBox');
   NotificationBox = await Hive.openBox<NotificationDB>('NotificationBox');
 
-  // void checkAccessTokenForNotification(String? deepLink) async {
-  //   final String? accessToken = await GetSharedPreferences.getAccessToken();
+  void checkAccessTokenForNotification(String? deepLink) async {
+    final String? accessToken = await GetSharedPreferences.getAccessToken();
 
-  //   if (accessToken != null) {
-  //     // User is logged in
-  //     if (deepLink == null || deepLink.isEmpty) {
-  //       // If deep link is null or empty, navigate to splash screen
-  //       navigatorKey.currentState?.pushNamed('/');
-  //     } else {
-  //       // Handle the deep link routing
-  //       if (deepLink == 'tab/offers') {
-  //         navigatorKey.currentState?.pushNamed('/home');
-  //       } else if (deepLink == 'tab/home') {
-  //         navigatorKey.currentState?.pushNamed('/home');
-  //       } else {
-  //         // Handle other deep links if any
-  //       }
-  //     }
-  //   } else {
-  //     // User is not logged in, navigate to splash screen
-  //     navigatorKey.currentState?.pushNamed('/');
-  //   }
-  // }
+    if (accessToken != null) {
+      // User is logged in
+      if (deepLink == null || deepLink.isEmpty) {
+        // If deep link is null or empty, navigate to splash screen
+        navigatorKey.currentState?.pushNamed('/');
+      } else {
+        // Handle the deep link routing
+        if (deepLink == 'tab/offers') {
+          navigatorKey.currentState?.pushNamed('/home');
+        } else if (deepLink == 'tab/home') {
+          navigatorKey.currentState?.pushNamed('/home');
+        } else {
+          // Handle other deep links if any
+        }
+      }
+    } else {
+      // User is not logged in, navigate to splash screen
+      navigatorKey.currentState?.pushNamed('/');
+    }
+  }
 
   // Lock orientation to portrait mode
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Initialize notification services
-  // await LocalNotificationService.init();
-  // tz.initializeTimeZones();
-  // await PushNotificationsService.init();
+  await LocalNotificationService.init();
+  tz.initializeTimeZones();
+  await PushNotificationsService.init();
 
   // Handle notifications in background
-  // FirebaseMessaging.onBackgroundMessage(
-  //     PushNotificationsService.onBackgroundMessage);
+  FirebaseMessaging.onBackgroundMessage(
+      PushNotificationsService.onBackgroundMessage);
 
   // Handle notifications when app is launched from terminated state
-  // final RemoteMessage? initialMessage =
-  //     await FirebaseMessaging.instance.getInitialMessage();
-  // if (initialMessage != null) {
-  //   final data = initialMessage.data;
-  //   final deepLink = data['deep_link']; // Replace with your key
+  final RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    final data = initialMessage.data;
+    final deepLink = data['deep_link']; // Replace with your key
 
   //   // Check access token and handle deep link navigation
-  //   checkAccessTokenForNotification(deepLink);
-  // }
+    checkAccessTokenForNotification(deepLink);
+  }
 
   // Handle notifications when app is in foreground
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-  //   if (message.data.isNotEmpty) {
-  //     // Fetch data from the message
-  //     final data = message.data;
-  //     final deepLink = data['deep_link']; // Replace with your key
-  //     print('deepest link $deepLink');
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    if (message.data.isNotEmpty) {
+      // Fetch data from the message
+      final data = message.data;
+      final deepLink = data['deep_link']; // Replace with your key
+      print('deepest link $deepLink');
 
-  //     // Handle notification tap in foreground
-  //     await PushNotificationsService.onForeroundNotificationTapped(
-  //         message, navigatorKey);
+      // Handle notification tap in foreground
+      await PushNotificationsService.onForeroundNotificationTapped(
+          message, navigatorKey);
 
-  //     // Check access token and deep link to route the user
-  //     checkAccessTokenForNotification(deepLink);
-  //   }
-  // });
+      // Check access token and deep link to route the user
+      checkAccessTokenForNotification(deepLink);
+    }
+  });
 
   // Handle notification taps when the app is in background
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-  //   if (message.data.isNotEmpty) {
-  //     // Fetch data from the message
-  //     final data = message.data;
-  //     final deepLink = data['deep_link']; // Replace with your key
-  //     print('deepest link $deepLink');
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    if (message.data.isNotEmpty) {
+      // Fetch data from the message
+      final data = message.data;
+      final deepLink = data['deep_link']; // Replace with your key
+      print('deepest link $deepLink');
 
-  //     // Handle notification tap in foreground
-  //     await PushNotificationsService.onForeroundNotificationTapped(
-  //         message, navigatorKey);
+      // Handle notification tap in foreground
+      await PushNotificationsService.onForeroundNotificationTapped(
+          message, navigatorKey);
 
-  //     // Check access token and deep link to route the user
-  //     checkAccessTokenForNotification(deepLink);
-  //   }
-  // });
+      // Check access token and deep link to route the user
+      checkAccessTokenForNotification(deepLink);
+    }
+  });
 
   // Run the app
   runApp(const MyApp());

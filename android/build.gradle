@@ -5,12 +5,27 @@ allprojects {
     }
 }
 
+// Set the root build directory
 rootProject.buildDir = "../build"
+
+// Configure each subproject
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+// Add the Google Services plugin dependency
+buildscript {
+    repositories {
+        google() // Ensure the Google repository is included
+        mavenCentral()
+    }
+    dependencies {
+        // Add Google Services plugin
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
 }
 
 tasks.register("clean", Delete) {
