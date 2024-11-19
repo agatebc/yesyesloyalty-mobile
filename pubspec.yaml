@@ -46,6 +46,7 @@ dependencies:
   json_annotation: ^4.8.1
   hive_flutter: ^1.1.0
   hive_generator: ^2.0.1
+  dartz: ^0.10.1
 
 # UI and styling
   bordered_text: ^2.0.0
