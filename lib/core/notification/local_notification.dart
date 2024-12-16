@@ -1,4 +1,5 @@
 import 'package:Yes_Loyalty/core/utils/util_functions.dart';
+import 'package:flutter/src/material/time.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -145,7 +146,7 @@ class LocalNotificationService {
       0,
       title,
       body,
-      UtilFunctions().nextInstanceOfTime(time, day),
+      UtilFunctions().nextInstanceOfTime(time as TimeOfDay, day as DateTime),
       platformChannelSpecifics,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,

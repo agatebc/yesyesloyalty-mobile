@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
 import 'package:dotted_line/dotted_line.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PointsCredited extends StatelessWidget {
@@ -112,7 +113,8 @@ class PointsCredited extends StatelessWidget {
               child: IconButton(
                 splashRadius: 50,
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  //Navigator.pop(context); // Close the dialog
+                  return navigateBackToHome(context);
                 },
                 icon: SvgPicture.asset(
                   "assets/Close.svg",

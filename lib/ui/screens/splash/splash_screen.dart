@@ -1,9 +1,9 @@
 import 'package:Yes_Loyalty/core/constants/common.dart';
 import 'package:Yes_Loyalty/core/constants/const.dart';
 import 'package:Yes_Loyalty/core/constants/text_styles.dart';
+import 'package:Yes_Loyalty/core/db/shared/shared_prefernce.dart';
 import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
 import 'package:flutter/material.dart';
-import 'package:Yes_Loyalty/core/db/shared/shared_prefernce.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -31,7 +31,7 @@ class SplashScreen extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  "Version 1.0.24 ${ApiConstants.baseUrl == "https://yl.tekpeak.in/api/" ? "D" : ''}",
+                  "Version 1.0.27 ${ApiConstants.baseUrl == "https://yl.tekpeak.in/api/" ? "D" : ''}",
                   style: TextStyles.rubikregular14black3B,
                 ),
                 SizedBox(height: height8),

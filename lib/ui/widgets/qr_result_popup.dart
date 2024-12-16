@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:Yes_Loyalty/core/constants/text_styles.dart';
+import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
 import 'package:Yes_Loyalty/ui/screens/misc/points_popup/layout_view.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
@@ -136,15 +139,18 @@ class QrResultPopup extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 0,
-            right: 0,
+            top: 500,
+            right: 500,
             child: Material(
               shape: CircleBorder(),
               color: Colors.transparent,
               child: IconButton(
                 splashRadius: 50,
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  log("=====Jk Close Dialogue Start");
+                  // Navigator.of(context).pop(); // Simply pop the dialog
+                  return navigateBackToHome(context);
+                  log("=====Jk Close Dialogue COMPLETE");
                 },
                 icon: SvgPicture.asset(
                   "assets/Close.svg",
@@ -153,6 +159,31 @@ class QrResultPopup extends StatelessWidget {
               ),
             ),
           ),
+          // Close button
+          Positioned(
+            top: 10,
+            right: 10,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(4),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: SvgPicture.asset(
+                    "assets/Close.svg",
+                    width: 24,
+                    height: 24, 
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

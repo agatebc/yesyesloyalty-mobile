@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Yes_Loyalty/core/db/hive_db/adapters/country_code_adapter/country_code_adapter.dart';
 import 'package:Yes_Loyalty/core/db/hive_db/boxes/country_code_box.dart';
+import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
 import 'package:Yes_Loyalty/core/view_model/qr_scanning/qr_scanning_bloc.dart';
 import 'package:Yes_Loyalty/ui/screens/home/sub_screen/settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -497,7 +498,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Spacer(),
                           IconButton(
                             onPressed: () async {
-                              Navigator.of(context).pop();
+                             // Navigator.of(context).pop();
+                              return navigateBackToHome(context);
                             },
                             icon: SvgPicture.asset(
                               "assets/Close.svg",

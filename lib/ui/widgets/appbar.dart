@@ -8,13 +8,12 @@ import 'package:Yes_Loyalty/core/db/hive_db/boxes/notification_box.dart';
 import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
 import 'package:Yes_Loyalty/core/view_model/qr_scanning/qr_scanning_bloc.dart';
 import 'package:Yes_Loyalty/core/view_model/user_details/user_details_bloc.dart';
-import 'package:Yes_Loyalty/ui/animations/toast.dart';
 import 'package:Yes_Loyalty/ui/widgets/qr_result_popup.dart';
 import 'package:Yes_Loyalty/ui/widgets/qr_result_validationPopup.dart';
+import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HomeAppBar extends StatefulWidget {
@@ -125,15 +124,15 @@ class _HomeAppBarState extends State<HomeAppBar> {
                 return PopScope(
                   // Allow dismissing the popup on initial back press
                   canPop: true,
-                  onPopInvoked: (didPop) {
-                    // Check if it's the first back press
-                    final isFirstPop = !Navigator.of(context).canPop();
-                    if (didPop && isFirstPop) {
-                      // Close the dialog without navigation
-                      Navigator.of(context)
-                          .pop(); // No need for (false) argument
-                    }
-                  },
+                  // onPopInvoked: (didPop) {
+                  //   // Check if it's the first back press
+                  //   final isFirstPop = !Navigator.of(context).canPop();
+                  //   if (didPop && isFirstPop) {
+                  //     // Close the dialog without navigation
+                  //     Navigator.of(context)
+                  //         .pop(); // No need for (false) argument
+                  //   }
+                  // },
                   child: QrResultPopup(
                     isOfferApplied: successState.response.data?.loyaltyStatus ==
                             "offer_applied"
@@ -179,12 +178,12 @@ class _HomeAppBarState extends State<HomeAppBar> {
               builder: (BuildContext context) {
                 return PopScope(
                   canPop: true,
-                  onPopInvoked: (didPop) {
-                    final isFirstPop = !Navigator.of(context).canPop();
-                    if (didPop && isFirstPop) {
-                      Navigator.of(context).pop();
-                    }
-                  },
+                  // onPopInvoked: (didPop) {
+                  //   final isFirstPop = !Navigator.of(context).canPop();
+                  //   if (didPop && isFirstPop) {
+                  //     Navigator.of(context).pop();
+                  //   }
+                  // },
                   child: QrResultValidationPopup(
                     validationResponse: _nameErrorText,
                   ),
@@ -280,6 +279,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           onDetect: (BarcodeCapture capture) {
                             final String? scannedValue =
                                 capture.barcodes.first.rawValue;
+
                             debugPrint("Barcode scanned: $scannedValue");
 
                             if (scannedValue == null || scannedValue.isEmpty) {
@@ -294,6 +294,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                                     QrId: scannedValue,
                                   ),
                                 );
+
                             navigateBackToHome(context);
                           },
                           validator: (value) {

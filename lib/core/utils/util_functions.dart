@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'; // Ensure you import Material package for runApp
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class UtilFunctions {
@@ -31,7 +32,7 @@ class UtilFunctions {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeTimeZones(); // Initialize timezone data
+  initializeTimeZones(); // Initialize timezone data
   runApp(MyApp());
 }
 

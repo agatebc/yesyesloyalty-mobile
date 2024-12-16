@@ -1,6 +1,3 @@
-import 'package:Yes_Loyalty/core/constants/text_styles.dart';
-import 'package:Yes_Loyalty/ui/screens/misc/points_popup/layout_view.dart';
-import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -70,7 +67,7 @@ class QrResultValidationPopup extends StatelessWidget {
               child: IconButton(
                 splashRadius: 50,
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.of(context).pop(); // Simply pop the dialog
                 },
                 icon: SvgPicture.asset(
                   "assets/Close.svg",

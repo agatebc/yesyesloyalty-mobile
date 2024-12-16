@@ -1,12 +1,14 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:Yes_Loyalty/core/constants/const.dart';
 import 'package:Yes_Loyalty/core/db/shared/shared_prefernce.dart';
+import 'package:Yes_Loyalty/core/model/login/login.dart';
 import 'package:Yes_Loyalty/core/model/login_validation/login_validation.dart';
 import 'package:dartz/dartz.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:Yes_Loyalty/core/constants/const.dart';
-import 'package:Yes_Loyalty/core/model/login/login.dart';
 
 class LoginService {
   static Future<Either<LoginValidation, Login>> login({
@@ -15,6 +17,8 @@ class LoginService {
     String? fcm_token,
   }) async {
     final url = Uri.parse('${ApiConstants.baseUrl}user/login');
+
+    print("Initial FCM Tokennn Aswathy: $fcm_token");
 
     // Define form data
     Map<String, String> formData = {
@@ -29,31 +33,28 @@ class LoginService {
     // Check the response status code
     if (response.statusCode == 200) {
       // Decode the response body
-  print('${response.body}');
+      print('Login Api response is: ${response.body}');
       var jsonMap = json.decode(response.body);
 
       // Construct Login object from parsed data
       var login = Login.fromJson(jsonMap);
 
-      var accessToken =
-          await SetSharedPreferences.storeAccessToken(login.misc.accessToken) ??
-              'Access Token empty';
+      await SetSharedPreferences.storeAccessToken(login.misc.accessToken) ??
+          'Access Token empty';
+
       return right(login);
     } else if (response.statusCode == 500) {
-        print('${response.body}');
+      print('${response.body}');
       var jsonMap = json.decode(response.body);
-      
+
       var validate = LoginValidation.fromJson(jsonMap);
 
       return left(validate);
     } else {
-      print('${response.body}');
       throw Exception('Failed to login: ${response.body}');
     }
   }
 }
-
-
 
 class DeviceRegistrationService {
   static Future<void> registerNewDevice({
@@ -66,33 +67,39 @@ class DeviceRegistrationService {
     String? osVersion,
     String? deviceName,
   }) async {
-    final url = Uri.parse('https://yyldev.agatebc.in/api/user/register-new-device');
+    log("DeviceRegistrationService =================== JkWorkz");
+    final url = Uri.parse('${ApiConstants.baseUrl}user/register-new-device');
+
+    log('Jk ===== fcm: $fcmToken');
+    log('Jk ===== ipAddress: $ipAddress');
+    log('Jk ===== platform: $platform');
+    log('Jk ===== location: $location');
+    log('Jk ===== deviceId: $deviceId');
+    log('Jk ===== deviceModel: $deviceModel');
+    log('Jk ===== osVersion: $osVersion');
+    log('Jk ===== fcm: $fcmToken');
+    log('Jk ===== deviceName: $deviceName');
 
     // Define form data
-    var request = http.MultipartRequest('POST', url)
-      ..fields['fcm_token'] = fcmToken
-      ..fields['ip_address'] = ipAddress
-      ..fields['platform'] = platform
-      ..fields['location'] = location
-      ..fields['device_id'] = deviceId ?? ''
-      ..fields['device_model'] = deviceModel ?? ''
-      ..fields['os_version'] = osVersion ?? ''
-      ..fields['device_name'] = deviceName ?? '';
+    Map<String, String> formData = {
+      'fcm_token': fcmToken,
+      'ip_address': ipAddress,
+      'platform': platform,
+      'location': location,
+      'device_id': deviceId ?? '',
+      'device_model': deviceModel ?? '',
+      'os_version': osVersion ?? '',
+      'device_name': deviceName ?? '',
+    };
 
-    // Send request
-    try {
-      final response = await request.send();
-      final responseData = await http.Response.fromStream(response);
-      
-      if (response.statusCode == 200) {
-        // Handle success
-        print('Device registered successfully: ${responseData.body}');
-      } else {
-        // Handle error
-        print('Failed to register device: ${responseData.body}');
-      }
-    } catch (e) {
-      print('Error: $e');
+    // Encode the form data
+    var response = await http.post(url, body: formData);
+
+    // Check the response status code
+    if (response.statusCode == 200) {
+      print('Device registered successfully: ${response.body}');
+    } else {
+      throw Exception('Failed to register the device: ${response.body}');
     }
   }
 }

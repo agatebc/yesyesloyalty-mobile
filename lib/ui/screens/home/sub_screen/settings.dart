@@ -149,7 +149,7 @@ class ApppVersionContent extends StatelessWidget {
               Expanded(
                 child: Text(description, style: TextStyles.rubik16black33w400),
               ),
-              Text('v1.0.24', style: TextStyles.rubik16black33w400),
+              Text('v1.0.27', style: TextStyles.rubik16black33w400),
               const SizedBox(width: 20),
             ],
           ),

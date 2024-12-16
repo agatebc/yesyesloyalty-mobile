@@ -1,23 +1,24 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
-import 'package:Yes_Loyalty/core/services/auth_service/login_services.dart';
-import 'package:Yes_Loyalty/ui/animations/toast.dart';
-// import 'package:connectivity_plus/connectivity_plus.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:geocoding/geocoding.dart';
-// import 'package:geolocator/geolocator.dart';
-import 'package:jumping_dot/jumping_dot.dart';
 import 'package:Yes_Loyalty/core/constants/common.dart';
 import 'package:Yes_Loyalty/core/constants/text_styles.dart';
+import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
+import 'package:Yes_Loyalty/core/services/auth_service/login_services.dart';
 import 'package:Yes_Loyalty/core/view_model/login/login_bloc.dart';
+import 'package:Yes_Loyalty/ui/animations/toast.dart';
 import 'package:Yes_Loyalty/ui/widgets/buttons.dart';
 import 'package:Yes_Loyalty/ui/widgets/password_textfield.dart';
 import 'package:Yes_Loyalty/ui/widgets/textfield.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:connectivity_plus/connectivity_plus.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+// import 'package:geocoding/geocoding.dart';
+// import 'package:geolocator/geolocator.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 
 class SignInScreen extends StatefulWidget {
   static const routeName = '/signIn';
@@ -29,22 +30,26 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   bool showDots = false;
+  String? fcmToken; // Make sure this is nullable
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String _ipAddress = 'Fetching...'; // Default text while fetching
   String _platform = 'Unknown'; // To store the platform
-  String _location = 'Fetching location...'; // To store the location
-  final _passwordController = TextEditingController();
-  final _emailcontroller = TextEditingController();
+  String _location = 'Fetching location...'; // To store the
+  final _passwordController = TextEditingController(text: 'Adeebk@12');
+  final _emailcontroller = TextEditingController(text: 'sasneham@gmail.com');
   final FocusNode emailfocusNode = FocusNode();
   final FocusNode passwordfocusNode = FocusNode();
   String? _emailErrorText;
   String? _passwordErrorText;
   bool _formSubmitted = false; // Add this boolean flag
-  String? fcmToken;
 
   @override
   void initState() {
     super.initState();
+
+    // _setupFirebase();
+    _setupFCM();
     _emailcontroller.addListener(_onEmailChanged);
     _passwordController.addListener(_onPasswordChanged);
     //getToken();
@@ -65,18 +70,18 @@ class _SignInScreenState extends State<SignInScreen> {
       //   }
       // });
 
-   //   await _loadData(); // Load data and then call API
+      //   await _loadData(); // Load data and then call API
       // Listen for connectivity changes
     });
   }
 
   // Future<void> _loadData() async {
   //   await _fetchIpAddress(); // Fetch the IP address
-   // _detectPlatform(); // Detect the platform (Android or iOS)
-    // await _fetchLocation(); // Fetch the location
+  // _detectPlatform(); // Detect the platform (Android or iOS)
+  // await _fetchLocation(); // Fetch the location
 
-    // After all data is fetched, call the API
-    // await _callApi();
+  // After all data is fetched, call the API
+  // await _callApi();
   // }
 
   Future<void> _fetchIpAddress() async {
@@ -102,11 +107,11 @@ class _SignInScreenState extends State<SignInScreen> {
     // Detect if the device is Android or iOS
     if (Platform.isAndroid) {
       setState(() {
-        _platform = 'Android';
+        _platform = 'android';
       });
     } else if (Platform.isIOS) {
       setState(() {
-        _platform = 'iOS';
+        _platform = 'ios';
       });
     }
   }
@@ -229,6 +234,84 @@ class _SignInScreenState extends State<SignInScreen> {
     });
   }
 
+  Future<void> _setupFirebase() async {
+    try {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+        log('User declined or has not accepted permission');
+        return; // Important: Stop here if no permission
+      }
+
+      fcmToken = await messaging.getToken();
+
+      await _fetchIpAddress();
+      _detectPlatform(); // You can keep this if you need platform info
+
+      if (fcmToken != null) {
+        // Only register if FCM token is available
+        _registerDevice();
+      }
+    } catch (e) {
+      print("Error getting FCM token: $e");
+      // Handle the error gracefully (e.g., show an error message to the user).
+    }
+  }
+
+  Future<void> _setupFCM() async {
+    try {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+        log('User declined or has not accepted permission');
+        return; // Important: Stop here if no permission
+      }
+
+      fcmToken = await messaging.getToken();
+
+      log("BEFORE FirebaseMessaging ==================== JkWorkz");
+      log("fcmToken: $fcmToken ==================== JkWorkz");
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+        log("FirebaseMessaging fcmToken 1: $fcmToken ==================== JkWorkz");
+        log("FirebaseMessaging newToken 1: $newToken ==================== JkWorkz");
+        fcmToken = newToken;
+        log("FirebaseMessaging fcmToken 2: $fcmToken ==================== JkWorkz");
+        log("FirebaseMessaging newToken 2: $newToken ==================== JkWorkz");
+      });
+      log("AFTER FirebaseMessaging ==================== JkWorkz");
+
+      await _fetchIpAddress();
+      _detectPlatform(); // You can keep this if you need platform info
+
+      if (fcmToken != null) {
+        // Only register if FCM token is available
+        _registerDevice();
+      }
+    } catch (e) {
+      print("Error getting FCM token: $e");
+      // Handle the error gracefully (e.g., show an error message to the user).
+    }
+  }
+
+  Future<void> _registerDevice() async {
+    await DeviceRegistrationService.registerNewDevice(
+      fcmToken: fcmToken!,
+      ipAddress: _ipAddress,
+      platform: _platform,
+      location: _location,
+    );
+  }
+
   void _submitForm() async {
     // bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
@@ -250,8 +333,8 @@ class _SignInScreenState extends State<SignInScreen> {
     // }
 
     setState(() {
-      _formSubmitted =
-          true; // Set form submitted to true when the button is clicked
+      _formSubmitted = true;
+      _isLoading = true;
       // Validate password field
       _validateEmail(_emailcontroller.text);
       _validatePassword(_passwordController.text);
@@ -266,7 +349,7 @@ class _SignInScreenState extends State<SignInScreen> {
         LoginEvent.signInWithEmailAndPassword(
           email: _emailcontroller.text,
           password: _passwordController.text,
-          //fcm_token: fcmToken,
+          fcm_token: fcmToken,
           // email: 'daniel344@gmail.com',
           // password: 'Daniel@222333',
           // fcm_token:

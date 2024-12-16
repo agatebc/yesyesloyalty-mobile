@@ -1,3 +1,4 @@
+import 'package:Yes_Loyalty/core/routes/app_route_config.dart';
 import 'package:Yes_Loyalty/core/view_model/offer_info/offer_info_bloc.dart';
 import 'package:Yes_Loyalty/core/view_model/offers_list/offers_list_bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -114,6 +115,7 @@ class _LocationDetailsState extends State<LocationDetails> {
                                   false; // Modal is closed
 
                               Navigator.of(context).pop();
+                               return navigateBackToHome(context);
                             },
                             icon: SvgPicture.asset(
                               "assets/Close.svg",
@@ -603,7 +605,8 @@ class StoreDetails extends StatelessWidget {
                             alignment: Alignment.centerRight,
                             child: IconButton(
                                 onPressed: () {
-                                  Navigator.pop(context); // Close the dialog
+                                  //Navigator.pop(context); // Close the dialog
+                                   return navigateBackToHome(context);
                                 },
                                 icon: SvgPicture.asset(
                                   "assets/Close.svg",
